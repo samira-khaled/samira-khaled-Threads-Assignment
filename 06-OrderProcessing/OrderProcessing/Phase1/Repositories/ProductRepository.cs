@@ -72,4 +72,40 @@ public sealed class ProductRepository
 
         return reserved;
     }
+    public async Task<bool> ReleaseStockAsync(int productId, int qty, CancellationToken ct = default)
+    {
+        bool released = false;
+
+        await SimulatedLatency.DelayAsync("Opening connection to products.json...",200, 200, ct);
+
+        await SimulatedLatency.DelayAsync("Beginning stock release transaction...",100, 100, ct);
+
+        await SimulatedLatency.DelayAsync($"Updating stock for Product #{productId}...",400, 400, ct);
+
+        await _store.UpdateAsync<Product>("products.json", products =>
+        {
+            foreach (var product in products)
+            {
+                if (product.Id == productId && qty > 0)
+                {
+                    product.StockQuantity += qty;
+                    released = true;
+                    break;
+                }
+            }
+        }, ct);
+
+        await SimulatedLatency.DelayAsync("Committing stock release...",200, 200, ct);
+
+        if (released)
+        {
+            Log.Success($"Stock released for Product #{productId}.");
+        }
+        else
+        {
+            Log.Error($"Stock release failed for Product #{productId}.");
+        }
+
+        return released;
+    }
 }

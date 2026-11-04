@@ -7,3 +7,14 @@ public sealed class DataFileCorruptedException : Exception
 
     }
 }
+public class ShippingProviderUnavailableException : Exception
+{
+    public ShippingProviderUnavailableException(string message)
+        : base(message)
+    {
+    }
+}
+public sealed class CustomerNotFoundException : Exception
+{
+    public CustomerNotFoundException(string message) : base(message) { }
+}

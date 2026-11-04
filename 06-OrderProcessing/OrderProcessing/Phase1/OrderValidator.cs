@@ -23,8 +23,8 @@ namespace OrderProcessing.Phase1
         }
         public async Task ValidateOrderAsync(Order order,CancellationToken cancellationToken)
         {
-            var customer = await _customerRepository.GetByIdAsync(order.CustomerId);
-            if(customer == null)
+            var customer = await _customerRepository.GetByIdAsync(order.CustomerId,cancellationToken);
+            if (customer == null)
             {
                 order.Status = OrderStatus.Rejected;
                 order.FailureReason = $"Customer #{order.CustomerId} not found";
@@ -40,7 +40,7 @@ namespace OrderProcessing.Phase1
             }
             foreach (var item in order.Items)
             {
-                var product = await _productRepository.GetByIdAsync(item.ProductId);
+                var product = await _productRepository.GetByIdAsync(item.ProductId, cancellationToken);
 
                 if (product == null)
                 {
@@ -60,7 +60,7 @@ namespace OrderProcessing.Phase1
             }
             if (order.CouponCode != null)
             {
-                var coupon = await _couponRepository.GetByCodeAsync(order.CouponCode);
+                var coupon = await _couponRepository.GetByCodeAsync(order.CouponCode, cancellationToken);
 
                 if (coupon == null)
                 {
@@ -78,8 +78,8 @@ namespace OrderProcessing.Phase1
                 }
             }
             order.Status = OrderStatus.Validated;
-order.FailureReason = null;
-await _orderRepository.SaveAsync(order, cancellationToken);
+            order.FailureReason = null;
+            await _orderRepository.SaveAsync(order, cancellationToken);
         }
     }
 }

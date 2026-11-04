@@ -2,7 +2,6 @@
 using OrderProcessing.Shared.Logging;
 using OrderProcessing.Shared.Models;
 using OrderProcessing.Shared.Storage;
-// استخدمي هنا الـ namespace الموجود فيه Customer عندك
 
 namespace OrderProcessing.Phase1.Repositories;
 
