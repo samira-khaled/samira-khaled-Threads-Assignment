@@ -1,3 +1,5 @@
+# Order Processing System — Threads & Async Assignment
+
 ## Phase 1 — Async Data Access Layer
 
 ### Task 7.3 — Sync vs Async Results
@@ -11,21 +13,27 @@
 
 The validation results were correct in both runs.
 
-Rejected orders:
+**Rejected Orders:**
 
-- Order #4: Customer is inactive
-- Order #9: Insufficient stock for 'Wireless Mouse'
-- Order #12: Coupon 'OLD20' has expired
-- Order #15: Customer #99 not found
-- Order #18: Coupon 'FAKE50' does not exist
+| Order | Reason |
+|---|---|
+| #4 | Customer is inactive |
+| #9 | Insufficient stock for 'Wireless Mouse' |
+| #12 | Coupon 'OLD20' has expired |
+| #15 | Customer #99 not found |
+| #18 | Coupon 'FAKE50' does not exist |
 
-The async run took longer because it also saves all 20 orders to `orders.json`, while the sync run only validates orders and does not save them. Each save operation has simulated delays, which add extra time to the async run.
+The async run took longer because it also saved all 20 orders to `orders.json`, while the sync run only validated the orders.
+
+Each save operation has simulated delays, which increased the total async execution time.
 
 ### Phase 1 Questions
 
 **1. Why can async take longer than sync when orders are awaited one after another?**
 
-Because both versions process orders sequentially. Each order must finish before the next one starts. Async does not make a single operation faster; it allows the thread to be released while waiting for an asynchronous operation to complete.
+Because both versions process orders sequentially. Each order must finish before the next one starts.
+
+Async does not make a single operation faster. It allows the thread to be released while waiting for an asynchronous operation to complete.
 
 In my run, the async time was higher because the async workflow also saved every order, while the sync workflow did not save results. Therefore, the two measurements do not include exactly the same work.
 
@@ -43,13 +51,17 @@ With `Thread.Sleep()`, the current thread is blocked and cannot do other work un
 
 **4. Why should a repository method return Task<T> instead of T?**
 
-Because repository operations often involve I/O, such as reading from or writing to files or databases. Returning `Task<T>` allows the caller to use `await` without blocking the current thread while waiting for the operation to finish.
+Because repository operations often involve I/O, such as reading from or writing to files or databases.
+
+Returning `Task<T>` allows the caller to use `await` without blocking the current thread while waiting for the operation to finish.
 
 **5. What is the difference between File.ReadAllText and File.ReadAllTextAsync? Does the async version occupy a thread while the disk is reading?**
 
 `File.ReadAllText` reads the file synchronously and blocks the current thread until the operation finishes.
 
-`File.ReadAllTextAsync` reads the file asynchronously and returns a Task. The caller can await it without blocking its thread while the I/O operation is pending. The async I/O operation generally does not need a thread to remain occupied during the disk wait.
+`File.ReadAllTextAsync` reads the file asynchronously and returns a Task. The caller can await it without blocking its thread while the I/O operation is pending.
+
+The async I/O operation generally does not need a thread to remain occupied during the disk wait.
 
 ---
 
@@ -63,7 +75,9 @@ Because repository operations often involve I/O, such as reading from or writing
 | Faulted | 1 |
 | Total Tasks | 15 |
 
-`RanToCompletion` means that the task finished without throwing an exception. It does not necessarily mean that the order was completed successfully. Some tasks returned `false` because their orders were rejected, while still finishing normally.
+`RanToCompletion` means that the task finished without throwing an exception. It does not necessarily mean that the order was completed successfully.
+
+Some tasks returned `false` because their orders were rejected, while still finishing normally.
 
 ### Final Order Results
 
@@ -86,7 +100,11 @@ The Phase 2 processing time was shorter because multiple orders could be process
 
 However, the two measurements are not directly comparable because they cover different operations. Phase 1 includes validation and saving all 20 orders, while Phase 2 measures the processing of the 15 validated orders.
 
-**Important:** One task became Faulted because Order #7 encountered the exception `Shipping provider unavailable`. The exception was handled in Phase2Runner, and the order was marked as Failed. The remaining tasks continued processing.
+**Important:**
+
+One task became Faulted because Order #7 encountered the exception `Shipping provider unavailable`.
+
+The exception was handled in Phase2Runner, and the order was marked as Failed. The remaining tasks continued processing.
 
 ### Task 8.5 — Task.Run for a CPU-bound Step
 
@@ -102,36 +120,131 @@ I used `Task.Run()` because the loop needs the CPU to do calculations.
 
 Database calls already have async methods, so I can use `await` directly. I don't need to use `Task.Run()` for them.
 
-## 1. What is the difference between starting a task and awaiting it?
+### Phase 2 Questions
 
-Starting a task means beginning its execution, and the program can continue doing other work. Awaiting a task means waiting for it to finish before executing the next line of code, without blocking the thread.
+**1. What is the difference between starting a task and awaiting it?**
 
-## 2. Does every Task create a new thread? Does Task.Delay() use a thread while waiting?
+Starting a task means beginning its execution, and the program can continue doing other work.
 
-No, not every Task creates a new thread. Some tasks use a thread from the ThreadPool, but Task.Delay() does not occupy a thread while waiting. It uses a timer, and the thread can do other work during this time.
+Awaiting a task means waiting for it to finish before executing the next line of code, without blocking the thread.
 
-## 3. What happens if you call .Result or .Wait() on an unfinished task instead of await? Why is it dangerous?
+**2. Does every Task create a new thread? Does Task.Delay() use a thread while waiting?**
 
-.Result and .Wait() block the current thread until the task finishes. This is dangerous because the thread cannot do other work, and it may cause a deadlock. We should use await instead.
+No, not every Task creates a new thread.
 
-## 4. What happens to an exception thrown inside a task that is never awaited?
+Some tasks use a thread from the ThreadPool, but `Task.Delay()` does not occupy a thread while waiting. It uses a timer, and the thread can do other work during this time.
 
-The exception is stored inside the task. If we never await or check the task, we may not notice that an exception happened, and the code after starting the task can continue executing. Using await allows us to catch the exception with try-catch.
+**3. What happens if you call .Result or .Wait() on an unfinished task instead of await? Why is it dangerous?**
 
-## 5. When should you use Task.Run(), and when should you avoid it?
+`.Result` and `.Wait()` block the current thread until the task finishes.
 
-We use Task.Run() for CPU-bound operations, such as heavy calculations. We should avoid using it for I/O-bound operations that already have async methods, such as reading files or calling APIs.
+This is dangerous because the thread cannot do other work, and it may cause a deadlock. We should use `await` instead.
 
-## 6. What is the difference between Task and Task<T>?
+**4. What happens to an exception thrown inside a task that is never awaited?**
 
-Task represents an asynchronous operation that does not return a result. Task<T> represents an asynchronous operation that returns a value of type T when it finishes.
+The exception is stored inside the task.
 
-## 7. Why can a lock block not contain an await?
+If we never await or check the task, we may not notice that an exception happened, and the code after starting the task can continue executing.
 
-Because lock is designed for synchronous code, and await can suspend the method while the lock is still held. For asynchronous synchronization, we can use SemaphoreSlim with WaitAsync() instead.
+Using `await` allows us to catch the exception with `try-catch`.
 
-## 8. Why did the unprotected stock reservation oversell, and how did you prevent it?
+**5. When should you use Task.Run(), and when should you avoid it?**
 
-Two threads could read the same stock quantity at the same time before it was updated. Both threads thought there was enough stock, so they reserved more than the available quantity.
+We use `Task.Run()` for CPU-bound operations, such as heavy calculations.
 
-We prevented this by using lock to allow only one thread at a time to execute the complete stock reservation operation (checking and updating the stock).
+We should avoid using it for I/O-bound operations that already have async methods, such as reading files or calling APIs.
+
+**6. What is the difference between Task and Task<T>?**
+
+`Task` represents an asynchronous operation that does not return a result.
+
+`Task<T>` represents an asynchronous operation that returns a value of type `T` when it finishes.
+
+**7. Why can a lock block not contain an await?**
+
+Because `lock` is designed for synchronous code, and `await` can suspend the method while the lock is still held.
+
+For asynchronous synchronization, we can use `SemaphoreSlim` with `WaitAsync()` instead.
+
+**8. Why did the unprotected stock reservation oversell, and how did you prevent it?**
+
+Two threads could read the same stock quantity at the same time before it was updated.
+
+Both threads thought there was enough stock, so they reserved more than the available quantity.
+
+We prevented this by using `lock` to allow only one thread at a time to execute the complete stock reservation operation (checking and updating the stock).
+
+---
+
+## Phase 3 — Sync vs Async
+
+### Questions & Answers
+
+**1. Does async make one order's workflow faster?**
+
+No, async does not necessarily make one order faster. It allows the thread to do other work while waiting for I/O operations instead of staying blocked.
+
+**2. Why does async scale better for many orders?**
+
+Async scales better because threads are not blocked while waiting for I/O operations. This allows the application to handle more orders using fewer threads.
+
+**3. What happens to the sync version with 1,000 orders?**
+
+The sync version may create too many threads, which increases memory usage, context switching, and CPU overhead. This can reduce performance and exhaust system resources.
+
+**4. Why is async essential for apps that call databases, files and APIs?**
+
+Because these operations take time to complete.
+
+Async allows the application to do other work while waiting for their results instead of blocking threads, improving responsiveness and scalability.
+
+---
+
+### Task 9.7 — Fire-and-Forget & Await
+
+#### 1. When is await necessary?
+
+We should use `await` when the next operation depends on the result of the current asynchronous operation, or when we need to make sure it completes before continuing.
+
+#### 2. When is fire-and-forget acceptable, if ever?
+
+Fire-and-forget can be acceptable for non-critical operations, such as logging or telemetry, if failures are properly handled and monitored.
+
+It should not be used for critical operations like sending order confirmation emails because the operation may not finish if the application exits.
+
+#### 3. Why is async void dangerous?
+
+`async void` is dangerous because it cannot be awaited, and its exceptions cannot be caught by the calling method using a normal try-catch block.
+
+This makes error handling difficult.
+
+#### 4. Why is async void acceptable for event handlers?
+
+`async void` is acceptable for event handlers because event handler signatures usually require a `void` return type.
+
+However, it should be avoided in other methods, where `async Task` is preferred.
+
+### Console Output — Before Fix (Fire-and-Forget)
+
+The email operation was not awaited, so the method finished before the email was sent.
+
+```text
+[01:46:19.276] [Thread 7] Order #1 saved.
+Order processing finished
+```
+
+The email confirmation message did not appear before the application exited.
+
+### Console Output — After Fix (Using await)
+
+After adding `await` to `SendConfirmationAsync`, the method waited until the email operation completed.
+
+```text
+[01:49:51.446] [Thread 5] Order #1 saved.
+[01:49:52.482] [Thread 8] Email for Order #1 sent successfully
+Order processing finished
+```
+
+**Result:**
+
+The email was sent successfully before the processing method finished. This confirms that using `await` ensures the email operation completes before the next line executes.
