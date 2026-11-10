@@ -1,4 +1,5 @@
 ﻿using OrderProcessing.Phase1.Repositories;
+using OrderProcessing.Shared.Exceptions;
 using OrderProcessing.Shared.Models;
 using System;
 using System.Collections.Generic;
@@ -34,7 +35,7 @@ namespace OrderProcessing.Phase3.Services
                 productQuantities[item.ProductId] += item.Quantity;
                 if (productQuantities[item.ProductId] > product.StockQuantity) 
                 {
-                    return false; 
+                    throw new InsufficientStockException(product.Name);
                 }
             }
             foreach (var item in productQuantities)

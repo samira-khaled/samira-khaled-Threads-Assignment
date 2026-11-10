@@ -32,3 +32,10 @@ public sealed class SmtpUnavailableException : Exception
     {
     }
 }
+public class InsufficientStockException : Exception
+{
+    public InsufficientStockException(string productName)
+        : base($"Insufficient stock for '{productName}'")
+    {
+    }
+}

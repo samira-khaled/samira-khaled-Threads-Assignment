@@ -108,4 +108,16 @@ public sealed class ProductRepository
 
         return released;
     }
+    public async Task<List<Product>> GetAllAsync(CancellationToken ct = default)// عشان phase 4 كل شركه بتاخد وقت كبير على ما تجيب المنتج 
+    {
+        await SimulatedLatency.DelayAsync(
+            "Loading all products...",
+            200,
+            200,
+            ct);
+
+        var products = await _store.ReadAsync<Product>("products.json", ct);
+
+        return products;
+    }
 }

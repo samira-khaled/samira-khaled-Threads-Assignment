@@ -41,7 +41,7 @@ namespace OrderProcessing.Phase2
         public async Task RunAsync()
         {
             await _dataSeeder.ResetAsync();
-          await _raceConditionDemo.RunAsync();
+           await _raceConditionDemo.RunAsync();
             await _dataSeeder.ResetAsync();
             var orders = await _incomingOrderRepository.GetAllAsync();
             List<Task> validationTasks = new List<Task>();
@@ -111,6 +111,8 @@ namespace OrderProcessing.Phase2
                     var order1 = validatedOrders[i];
                     order1.Status = OrderStatus.Failed;
                     order1.FailureReason = $"Error processing order: {ex.Message}";
+                    Console.WriteLine($"Failed Order #{validatedOrders[i].Id}");
+                    Console.WriteLine($"Exception: {ex}");
                     foreach (var item in order1.Items)
                     {
                         await _productRepository.ReleaseStockAsync(item.ProductId,item.Quantity,CancellationToken.None);
@@ -127,6 +129,7 @@ namespace OrderProcessing.Phase2
             foreach (var task in processingTasks)
             {
                 Console.WriteLine($"Final Task Status: {task.Status}");
+                
             }
             processingStopwatch.Stop();
 

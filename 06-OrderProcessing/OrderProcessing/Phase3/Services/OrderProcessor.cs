@@ -63,7 +63,20 @@ namespace OrderProcessing.Phase3.Services
                 return false;
             }
             var stopwatch = Stopwatch.StartNew();
-            bool isreserved = await _inventoryService.ReserveStockAsync(order, cancellationToken);
+            bool isreserved;
+            try
+            {
+                isreserved = await _inventoryService.ReserveStockAsync(order, cancellationToken);
+            }
+            catch (InsufficientStockException ex)
+            {
+                stopwatch.Stop();
+                Log.Error($"Order #{order.Id} -> Step 2/6 Reserve Stock ... REJECTED: {ex.Message} in {stopwatch.ElapsedMilliseconds} ms");
+                order.Status = OrderStatus.Rejected;
+                order.FailureReason = ex.Message;
+                await _orderRepository.SaveAsync(order, cancellationToken);
+                return false;
+            }
             LogStep(order, 2, "Reserve Stock", stopwatch, isreserved ? "OK" : "REJECTED");
             if (!isreserved)
             {
@@ -71,6 +84,7 @@ namespace OrderProcessing.Phase3.Services
                 order.FailureReason = "Insufficient stock for one or more items.";
                 await _orderRepository.SaveAsync(order, cancellationToken);
                 return false;
+
             }
             var pricingStopwatch = Stopwatch.StartNew();
             try

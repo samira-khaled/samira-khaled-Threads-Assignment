@@ -64,6 +64,7 @@ public sealed class JsonFileStore
 
             cancellationToken.ThrowIfCancellationRequested();// معملش كانسل للطلب فى نص الكتابه 
             File.Move(tempPath, path, overwrite: true);// نقلت المؤقت فى الاصل
+            
         }
         finally
         {
@@ -164,7 +165,7 @@ public sealed class JsonFileStore
         {
             File.WriteAllText(tempPath, json, Encoding.UTF8);
 
-            File.Move(tempPath, path, overwrite: true);
+            //File.Move(tempPath, path, overwrite: true);
         }
         finally
         {
