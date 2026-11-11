@@ -1,0 +1,102 @@
+﻿[
+  {
+    "id": "d3152e3a-2533-4bc8-b24b-8acc7051e908",
+    "orderId": 10,
+    "to": "dina.fathy@example.com",
+    "subject": "Order #10 Confirmation",
+    "body": "Hello Dina Fathy, your order #10 has been confirmed.",
+    "sentAt": "2026-11-08T20:21:14.5595823Z",
+    "attempts": 1,
+    "lastError": null
+  },
+  {
+    "id": "b04f0264-29a1-402b-89ae-2b60068ded53",
+    "orderId": 19,
+    "to": "hassan.tarek@example.com",
+    "subject": "Order #19 Confirmation",
+    "body": "Hello Hassan Tarek, your order #19 has been confirmed.",
+    "sentAt": "2026-11-08T20:21:14.7081369Z",
+    "attempts": 1,
+    "lastError": null
+  },
+  {
+    "id": "c8352560-21ca-4726-8429-c72fd8ec27aa",
+    "orderId": 2,
+    "to": "sara.mohamed@example.com",
+    "subject": "Order #2 Confirmation",
+    "body": "Hello Sara Mohamed, your order #2 has been confirmed.",
+    "sentAt": "2026-11-08T20:21:15.0750963Z",
+    "attempts": 1,
+    "lastError": null
+  },
+  {
+    "id": "df7244b5-7666-4ded-9a0c-80ef95e9ab11",
+    "orderId": 6,
+    "to": "nour.khaled@example.com",
+    "subject": "Order #6 Confirmation",
+    "body": "Hello Nour Khaled, your order #6 has been confirmed.",
+    "sentAt": "2026-11-08T20:21:15.4769881Z",
+    "attempts": 1,
+    "lastError": null
+  },
+  {
+    "id": "b915cc3e-f308-48c2-84d0-cb1edbb5e756",
+    "orderId": 16,
+    "to": "nour.khaled@example.com",
+    "subject": "Order #16 Confirmation",
+    "body": "Hello Nour Khaled, your order #16 has been confirmed.",
+    "sentAt": "2026-11-08T20:21:16.9683669Z",
+    "attempts": 1,
+    "lastError": null
+  },
+  {
+    "id": "7eba3da5-b8ea-4774-a1a5-1d4b60d54fed",
+    "orderId": 7,
+    "to": "karim.samir@example.com",
+    "subject": "Order #7 Confirmation",
+    "body": "Hello Karim Samir, your order #7 has been confirmed.",
+    "sentAt": "2026-11-08T20:21:17.0163676Z",
+    "attempts": 1,
+    "lastError": null
+  },
+  {
+    "id": "b99157f7-a9a5-45ea-b3a4-58897cd3030e",
+    "orderId": 1,
+    "to": "ahmed.ali@example.com",
+    "subject": "Order #1 Confirmation",
+    "body": "Hello Ahmed Ali, your order #1 has been confirmed.",
+    "sentAt": "2026-11-08T20:21:17.6289509Z",
+    "attempts": 1,
+    "lastError": null
+  },
+  {
+    "id": "c48fdf8e-39f0-4e18-b1e6-cfb9c2ac6409",
+    "orderId": 14,
+    "to": "youssef.adel@example.com",
+    "subject": "Order #14 Confirmation",
+    "body": "Hello Youssef Adel, your order #14 has been confirmed.",
+    "sentAt": "2026-11-08T20:21:17.6767559Z",
+    "attempts": 1,
+    "lastError": null
+  },
+  {
+    "id": "554367d0-7a6b-4e3a-8a47-d8bbb4d78f78",
+    "orderId": 20,
+    "to": "dina.fathy@example.com",
+    "subject": "Order #20 Confirmation",
+    "body": "Hello Dina Fathy, your order #20 has been confirmed.",
+    "sentAt": "2026-11-08T20:21:17.85506Z",
+    "attempts": 1,
+    "lastError": null
+  },
+  {
+    "id": "183a92e1-1e8f-48ae-9a27-1e35d31c5a4b",
+    "orderId": 3,
+    "to": "omar.hassan@example.com",
+    "subject": "Order #3 Confirmation",
+    "body": "Hello Omar Hassan, your order #3 has been confirmed.",
+    "sentAt": "2026-11-08T20:21:21.1215901Z",
+    "attempts": 3,
+    "lastError": null
+  }
+]
